@@ -35,7 +35,7 @@ def produce_mace_chemiscope_input(
         default=None,
         help="Path to XYZ file containing your system",
     ),
-    mp_data_path: str = typer.Argument(default="./data/", help="Path to MP data"),
+    mp_data_path: str = typer.Argument(default=None, help="Path to MP data"),
     filtering: FilterType = typer.Option(
         default=FilterType.exclusive,
         case_sensitive=False,
