@@ -66,7 +66,7 @@ def produce_mace_chemiscope_input(
         default_dtype="float64",
     )
 
-    # cutoff_dict = check_cutoffs(element_subset, element_cutoffs, filtering)
+    cutoff_dict = check_cutoffs(element_subset, element_cutoffs, filtering)
 
     # Load MP data
     train_atoms, training_data_df = get_cleaned_dataframe(
