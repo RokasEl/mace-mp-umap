@@ -28,7 +28,7 @@ def write_chemiscope_input(train_atoms, test_atoms, reducers):
     periods = groups_and_periods[:, 1]
     num_neighbours = np.hstack([mol.arrays["num_neighbours"] for mol in all_atoms])
     properties = {
-        "UMAP": {
+        "0_UMAP": {
             "target": "atom",
             "values": umap_emb,
             "description": "UMAP of per-atom representation of the structures",
