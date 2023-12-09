@@ -41,8 +41,8 @@ def write_chemiscope_input(train_atoms, test_atoms, reducers):
         "PCA": {
             "target": "atom",
             "values": pca,
+            "description": "PCA of per-atom representation of the structures",
         },
-        "description": "PCA of per-atom representation of the structures",
         "num_neighbours": {
             "target": "atom",
             "values": num_neighbours,
@@ -65,7 +65,7 @@ def write_chemiscope_input(train_atoms, test_atoms, reducers):
         },
     }
     chemiscope.write_input(
-        path=f"chemiscope_input.json",
+        path="chemiscope_input.json",
         frames=all_atoms,
         properties=properties,
         # This is required to display properties with `target: "atom"`
