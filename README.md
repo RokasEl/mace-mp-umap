@@ -12,7 +12,7 @@ mace_mp_umap_analysis --help
 
 Will show the relevent options.
 
-First file is always your test system, the second file is the relaxed MP data. I'll attach a link to that separately.
+First file is always your test system, the second file is the relaxed MP data. See link below.
 
 Filtering flag is used as such:
     - `exclusive` will keep only those MP structures which exactly contain *only* those elements supplied via the `-e` flag.
