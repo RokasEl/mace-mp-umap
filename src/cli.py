@@ -103,3 +103,7 @@ def produce_mace_chemiscope_input(
     results_df.to_csv("closest_training_points.csv", index=False)
     # Produce chemiscope input file
     write_chemiscope_input(train_atoms, test_atoms, reducers)
+
+
+if __name__ == "__main__":
+    app()
