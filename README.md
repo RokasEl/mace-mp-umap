@@ -20,7 +20,7 @@ Filtering flag is used as such:
 
 Add multiple elements via multiple `-e` flags. E.g.
 ```bash
-mace_mp_umap_analysis test_system.xyz mp_data.xyz -e Li -e O -filtering exclusive
+mace_mp_umap_analysis test_system.xyz universal_train_corr.xyz -e Li -e O -filtering exclusive
 ```
 
 ## MP data
