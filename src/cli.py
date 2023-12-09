@@ -43,12 +43,13 @@ def produce_mace_chemiscope_input(
     ),
     element_subset: Annotated[
         t.List[str],
-        typer.Option("-e", help="List of elements to include in the subset."),
+        typer.Option(
+            "--add-element", "-e", help="List of elements to include in the subset."
+        ),
     ] = [],
     element_cutoffs: Annotated[
         t.List[float],
         typer.Option(
-            default=[3.0, 3.0],
             help="List of cutoff values for each element in the subset. If one value is provided, it is used for all elements.",
         ),
     ] = [],
@@ -65,7 +66,7 @@ def produce_mace_chemiscope_input(
         default_dtype="float64",
     )
 
-    cutoff_dict = check_cutoffs(element_subset, element_cutoffs, filtering)
+    # cutoff_dict = check_cutoffs(element_subset, element_cutoffs, filtering)
 
     # Load MP data
     train_atoms, training_data_df = get_cleaned_dataframe(
