@@ -46,8 +46,7 @@ def plot_dimensionality_reduction(
             training_data_df[f"{tag}_pca_2"],
             s=30,
             alpha=0.8,
-            c=training_data_df["num_neighbours"],
-            cmap=colors,
+            c=colors,
             rasterized=True,
         )
         ax[0].set_title(f"UMAP {tag}")
