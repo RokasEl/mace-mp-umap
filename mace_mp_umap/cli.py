@@ -62,7 +62,7 @@ def produce_mace_chemiscope_input(
     # Load model
     calc = mace_mp(
         model="medium",
-        device="cuda",
+        device=DEVICE,
         default_dtype="float64",
     )
 
