@@ -51,7 +51,7 @@ def produce_mace_chemiscope_input(
     element_cutoffs: Annotated[
         t.List[float],
         typer.Option(
-            help="List of cutoff values for each element in the subset. If one value is provided, it is used for all elements.",
+            help="List of cutoff values for each element in the subset. If one value is provided, it is used for all elements. If no values are provided, no neighbour analysis is performed.",
         ),
     ] = [],
     create_plots: bool = typer.Option(
