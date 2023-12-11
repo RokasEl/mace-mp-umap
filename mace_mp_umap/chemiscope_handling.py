@@ -14,60 +14,64 @@ def get_group_and_period(symbol):
     return ELEMENT_DICT[symbol]
 
 
-def write_chemiscope_input(train_atoms, test_atoms, reducers):
-    all_atoms = train_atoms + test_atoms
-    descriptors = np.vstack([mol.arrays["mace_descriptors"] for mol in all_atoms])
+def get_reduced_embeddings(reducers, descriptors):
     pca = reducers[1][1].transform(descriptors)
     umap_emb = reducers[1][0].transform(descriptors)
-    tag = ["train"] * sum([len(x) for x in train_atoms]) + ["test"] * sum(
-        [len(x) for x in test_atoms]
+    return pca, umap_emb
+
+
+def get_train_test_split(train_atoms, test_atoms):
+    split = ["train"] * sum([len(x) for x in train_atoms])
+    split += ["test"] * sum([len(x) for x in test_atoms])
+    return split
+
+
+def get_atomic_properties(atoms):
+    embeddings = np.vstack([a.arrays["mace_descriptors"] for a in atoms])
+    symbols = np.hstack([a.symbols for a in atoms])
+    groups, periods = np.vectorize(get_group_and_period)(symbols)
+    if "num_neighbours" in atoms[0].arrays:
+        neighbours = np.hstack([a.arrays["num_neighbours"] for a in atoms])
+    else:
+        neighbours = None
+    return embeddings, symbols, groups, periods, neighbours
+
+
+def create_property(name, values, description, target="atom"):
+    return {f"{name}": {"target": target, "values": values, "description": description}}
+
+
+def write_chemiscope_input(train_atoms, test_atoms, reducers):
+    all_atoms = train_atoms + test_atoms
+
+    (descriptors, symbols, groups, periods, neighbours) = get_atomic_properties(
+        all_atoms
     )
-    symbols = np.hstack([mol.symbols for mol in all_atoms])
-    groups_and_periods = np.array([get_group_and_period(x) for x in symbols])
-    groups = groups_and_periods[:, 0]
-    periods = groups_and_periods[:, 1]
-    num_neighbours = np.hstack([mol.arrays["num_neighbours"] for mol in all_atoms])
-    properties = {
-        "0_UMAP": {
-            "target": "atom",
-            "values": umap_emb,
-            "description": "UMAP of per-atom representation of the structures",
-        },
-        "train_test": {
-            "target": "atom",
-            "values": tag,
-            "description": "Whether the structure is in the training or test set",
-        },
-        "PCA": {
-            "target": "atom",
-            "values": pca,
-            "description": "PCA of per-atom representation of the structures",
-        },
-        "num_neighbours": {
-            "target": "atom",
-            "values": num_neighbours,
-            "description": "Number of neighbours within cutoff",
-        },
-        "element": {
-            "target": "atom",
-            "values": symbols,
-            "description": "Element of the atom",
-        },
-        "group": {
-            "target": "atom",
-            "values": groups,
-            "description": "Group of the atom",
-        },
-        "period": {
-            "target": "atom",
-            "values": periods,
-            "description": "Period of the atom",
-        },
+    pca, umap_emb = get_reduced_embeddings(reducers, descriptors)
+    train_test_split = get_train_test_split(train_atoms, test_atoms)
+    properties = [
+        create_property("0_UMAP", umap_emb, "UMAP Embeddings"),
+        create_property("PCA", pca, "PCA Embeddings"),
+        create_property("TrainTest", train_test_split, "Train/Test split"),
+        create_property("element", symbols, "Atomic element"),
+        create_property("group", groups, "Group"),
+        create_property("period", periods, "Period"),
+    ]
+    if neighbours is not None:
+        properties.append(
+            create_property("num_neighbours", neighbours, "Number of neighbours")
+        )
+    properties = {k: v for d in properties for k, v in d.items()}
+    # define better default settings for the viewer
+    settings = {
+        "map": {"color": {"property": "TrainTest"}, "palette": "bwr"},
+        "structure": [{"atomLabels": True}],
     }
     chemiscope.write_input(
         path="chemiscope_input.json",
         frames=all_atoms,
         properties=properties,
+        settings=settings,
         # This is required to display properties with `target: "atom"`
         environments=chemiscope.all_atomic_environments(all_atoms),
     )
