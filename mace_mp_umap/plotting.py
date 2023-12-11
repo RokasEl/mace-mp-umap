@@ -13,7 +13,7 @@ def get_colors_for_training_data(training_data_df, test_data_df):
         training_data_df["num_neighbours"].max(), test_data_df["num_neighbours"].max()
     )
     norm = mcolors.Normalize(vmin=min_val, vmax=max_val)
-    cmap = plt.get_cmap("viridis")
+    cmap = plt.get_cmap("cividis")
     colors = cmap(norm(training_data_df["num_neighbours"]))
     return colors, norm
 
@@ -25,7 +25,7 @@ def plot_dimensionality_reduction(
     colors, norm = get_colors_for_training_data(training_data_df, test_data_df)
     if norm is not None:
         cbar_ax = fig.add_axes([0.2, 0.95, 0.6, 0.02])
-        sm = plt.cm.ScalarMappable(cmap="viridis", norm=norm)
+        sm = plt.cm.ScalarMappable(cmap="cividis", norm=norm)
         sm.set_array([])
         fig.colorbar(sm, cax=cbar_ax, orientation="horizontal")
         cbar_ax.set_title("num_neighbours", size=10, loc="left")
