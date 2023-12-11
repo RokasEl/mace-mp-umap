@@ -41,7 +41,7 @@ def create_property(name, values, description, target="atom"):
     return {f"{name}": {"target": target, "values": values, "description": description}}
 
 
-def write_chemiscope_input(train_atoms, test_atoms, reducers):
+def write_chemiscope_input(train_atoms, test_atoms, reducers, system_name):
     all_atoms = train_atoms + test_atoms
 
     (descriptors, symbols, groups, periods, neighbours) = get_atomic_properties(
@@ -68,7 +68,7 @@ def write_chemiscope_input(train_atoms, test_atoms, reducers):
         "structure": [{"atomLabels": True}],
     }
     chemiscope.write_input(
-        path="chemiscope_input.json",
+        path=f"{system_name}_chemiscope_input.json",
         frames=all_atoms,
         properties=properties,
         settings=settings,

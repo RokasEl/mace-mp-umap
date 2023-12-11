@@ -1,3 +1,4 @@
+import pathlib
 import typing as t
 
 import typer
@@ -80,6 +81,8 @@ def produce_mace_chemiscope_input(
         raise ValueError(
             f"No structures found in {data_path} or {mp_data_path}. Check your filtering settings."
         )
+    system_name = pathlib.Path(data_path).stem
+    print(f"Will use {system_name} for naming output files.")
     # Fit dimensionality reduction
     slices = get_layer_specific_feature_slices(calc)
     reducers = []
@@ -98,12 +101,12 @@ def produce_mace_chemiscope_input(
         figure = plot_dimensionality_reduction(
             training_data_df, test_data_df, len(slices)
         )
-        figure.savefig("dimensionality_reduction.pdf")
+        figure.savefig(f"{system_name}_dimensionality_reduction.pdf")
     # Find closest training points
     results_df = find_closest_training_points(training_data_df, test_data_df)
-    results_df.to_csv("closest_training_points.csv", index=False)
+    results_df.to_csv(f"{system_name}_closest_training_points.csv", index=False)
     # Produce chemiscope input file
-    write_chemiscope_input(train_atoms, test_atoms, reducers)
+    write_chemiscope_input(train_atoms, test_atoms, reducers, system_name)
 
 
 if __name__ == "__main__":
