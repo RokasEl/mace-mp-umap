@@ -1,5 +1,6 @@
 import pathlib
 import typing as t
+from collections import defaultdict
 
 import typer
 from mace.calculators import mace_mp
@@ -13,7 +14,7 @@ import torch
 
 from .analysis import find_closest_training_points
 from .chemiscope_handling import write_chemiscope_input
-from .data_manipulations import check_cutoffs, get_cleaned_dataframe
+from .data_manipulations import get_cleaned_dataframe
 from .dim_reduction import (
     apply_dimensionality_reduction,
     fit_dimensionality_reduction,
@@ -38,7 +39,7 @@ def produce_mace_chemiscope_input(
     ),
     mp_data_path: str = typer.Argument(default=None, help="Path to MP data"),
     filtering: FilterType = typer.Option(
-        default=FilterType.exclusive,
+        default=FilterType.none,
         case_sensitive=False,
         help="Whether to filter out structures that contain elements not in the subset or to include them.",
     ),
@@ -48,26 +49,31 @@ def produce_mace_chemiscope_input(
             "--add-element", "-e", help="List of elements to include in the subset."
         ),
     ] = [],
-    element_cutoffs: Annotated[
-        t.List[float],
-        typer.Option(
-            help="List of cutoff values for each element in the subset. If one value is provided, it is used for all elements. If no values are provided, no neighbour analysis is performed.",
-        ),
-    ] = [],
     create_plots: bool = typer.Option(
         default=False, help="Whether to create static UMAP and PCA plots."
     ),
 ):
     if DEVICE != "cuda":
         warnings.warn("CUDA not available, using CPU. Might be slow.")
+
+    if filtering == FilterType.none:
+        raise ValueError(
+            "You must specify filtering type (either `--filtering exclusive` or `--filtering inclusive`).\n"
+            "Exclusive mode means those and only those structures are kept that contail all elements supplied via `-e` flags.\n"
+            "Inclusive mode means that other elements are allowed in addition to those supplied via `-e` flags.\n"
+            "Most applications should use `--filtering inclusive`. However, for elemental compounds or molecular compounds like water `exclusive` mode is more appropriate."
+        )
+
     # Load model
     calc = mace_mp(
         model="medium",
         device=DEVICE,
         default_dtype="float64",
     )
-
-    cutoff_dict = check_cutoffs(element_subset, element_cutoffs, filtering)
+    print(
+        f"Using the MACE cutoff ({calc.r_max} A) for neighbour analysis for all elements."
+    )
+    cutoff_dict = defaultdict(lambda: calc.r_max)
 
     # Load MP data
     train_atoms, training_data_df = get_cleaned_dataframe(

@@ -64,7 +64,7 @@ def write_chemiscope_input(train_atoms, test_atoms, reducers, system_name):
     properties = {k: v for d in properties for k, v in d.items()}
     # define better default settings for the viewer
     settings = {
-        "map": {"color": {"property": "TrainTest"}, "palette": "bwr"},
+        "map": {"color": {"property": "TrainTest"}, "palette": "brg"},
         "structure": [{"atomLabels": True}],
     }
     chemiscope.write_input(

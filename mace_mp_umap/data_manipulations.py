@@ -1,5 +1,4 @@
 import typing as t
-from collections import defaultdict
 
 import ase
 import ase.io as aio
@@ -100,27 +99,6 @@ def filter_atoms(
         raise ValueError(
             f"Filtering type {filtering_type} not recognised. Must be one of 'none', 'exclusive', or 'inclusive'."
         )
-
-
-def check_cutoffs(
-    element_subset: list[str], cutoffs: list[float], filtering_type: str
-) -> dict[str, float] | None:
-    if len(cutoffs) == 0:
-        cutoff_dict = None
-    elif len(cutoffs) == 1:
-        print("Using the same cutoff for all elements")
-        cutoff_dict = defaultdict(lambda: cutoffs[0])
-    elif len(cutoffs) == len(element_subset):
-        cutoff_dict = dict(zip(element_subset, cutoffs))
-        if filtering_type == "inclusive":
-            cutoff_dict = defaultdict(lambda: cutoffs[0], cutoff_dict)
-            print(f"Using {cutoffs[0]} A cutoff for all elements not in the subset")
-    else:
-        raise ValueError(
-            f"Number of cutoffs ({len(cutoffs)}) does not match the number of elements in the subset ({len(element_subset)})."
-            "Please provide no cutoffs, one cutoff, or a cutoff for each element in the subset."
-        )
-    return cutoff_dict
 
 
 def remove_non_unique_environments(df, decimals=4):

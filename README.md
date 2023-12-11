@@ -19,7 +19,6 @@ mace_mp_umap_analysis PATH_TO_TEST_SYSTEM \
  PATH_TO_MP_DATA \
  -e Al -e O \
  --filtering exclusive \
- --element-cutoffs 3 \
  --create-plots
 ```
 This will generate three files in the same path as your current directory. System name is inferred from the name of your data file:
@@ -27,22 +26,20 @@ This will generate three files in the same path as your current directory. Syste
  2. `YOUR_SYSTEM_NAME_clostest_training_points.csv` A csv file that ranks the similarity of your test system to each structure in the MP data that passed the filtering criteria.
  3. `YOUR_SYSTEM_NAME_chemiscope_input.json` Input for https://chemiscope.org/ where you can interactively visualise the dimensionality reduction plots and see 3D renders of each atomic environment.
 
-First file is always your test system, the second file is the relaxed MP data. See link below.
+First file is always your test system, the second file is the relaxed MP data. See link below. Make sure your test system contains a few representative structures (multi frame input is supported) but don't use hundreds of very similar structures as it will only slow down the plotting and analysis without giving additional information.
 
-Filtering flag is used as such:
+You must supply either an `exclusive` or `inclusive` filtering flag:
 
-   - `exclusive` will keep only those MP structures which exactly contain *only* those elements supplied via the `-e` flag. In the example above, only structures containing Al and O will be kept.
+   - `exclusive` will keep those MP structures which exactly contain **only** those elements supplied via the `-e` flag. In the example above, only structures containing Al and O will be kept.
    - `inclusive` will allows other elements in addition to those supplied via the `-e` flag. In the example above, structures containing Al and O **and other elements** will be kept.
 
-Element cutoffs flag let's you analyse local atom density:
+In most cases, you should use `inclusive` filtering: the UMAP should naturally seggregate additional elements and it might reveal interesting unexpected connection in the data. For example, if your system is catalysis on Indium oxide, you might want to include all structures containing Indium and Oxygen but also allow other elements to see if your catalysis example is similar to other bulk structures.
 
-   - If `--element-cutoffs` is not supplied, no analysis is done.
-   - If one number is supplied, it is used as the cutoff for all elements. E.g. `--element-cutoffs 3`. The number of neighours can be seen in the generated plots or with chemiscope.
-   - If you want to specify different cutoffs for each element, then supply the cutoffs the same number of times as there are `-e` flags. E.g. `--element-cutoffs 3 --element-cutoffs 4`. In this case, the first cutoff will be used for the first element, the second cutoff for the second element, etc.
+However, for elemental or small molecular systems (like H2O), you should use `exclusive` filtering. For example, if you're doing Silicon melts including other elements would be too permisive as Si is a very frequent element in the MP data.
 
 To create static UMAP and PCA plots use the `--create-plots` flag:
 
- - `--create-plots` plots will be created.
+ - `--create-plots` plots will be created. Colours are assigned based on the local atom density using the MACE model's cutoff to build the neighbourlist.
  - `--no-create-plots` plots will not be created. This is the default behaviour.
 
 You can also use the `--help` flag to see all the options.
