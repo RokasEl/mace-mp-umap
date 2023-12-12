@@ -50,6 +50,8 @@ mace_mp_umap_analysis --help
 
 ## MP data
 
-Download from this link: https://www.dropbox.com/scl/fi/3n9bikjlk4m3o5py7dq5h/universal_train_corr.xyz?rlkey=w58zho1ow70fp9miiw3nh8jp7&dl=0
+Download from this link: https://drive.google.com/file/d/1cdj_a5tZZInyHD5XDv1J7_VTs45GW6vL/view?usp=drive_link
+
+Don't forget to unzip it!
 
 Data taken from Materials Project which is distributed under a [Creative Commons Attribution 4.0 International License](https://creativecommons.org/licenses/by/4.0/).

@@ -21,7 +21,7 @@ def convert_to_dataframe(atoms: t.List[ase.Atoms | ase.Atom]) -> pd.DataFrame:
         for idx, d in enumerate(descs):
             data.append(
                 {
-                    "mp_id": mol.info["id"] if "id" in mol.info else None,
+                    "mp_id": mol.info["mp_id"] if "mp_id" in mol.info else None,
                     "structure_index": mol_idx,
                     "atom_index": idx,
                     "element": elements[idx],
