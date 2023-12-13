@@ -47,7 +47,7 @@ def write_id_match_csv(train_atoms, test_atoms, system_name):
     mp_ids += [None for atoms in test_atoms]
     train_test_label = ["training"] * len(train_atoms) + ["test"] * len(test_atoms)
     df = pd.DataFrame({"mp_id": mp_ids, "train_test": train_test_label})
-    df.to_csv(f"{system_name}_chemiscope_id_match.csv", index=False)
+    df.to_csv(f"{system_name}_chemiscope_id_match.csv", index=True)
 
 
 def write_chemiscope_input(train_atoms, test_atoms, reducers, system_name):
