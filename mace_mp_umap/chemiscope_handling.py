@@ -1,6 +1,7 @@
 import chemiscope
 import mendeleev
 import numpy as np
+import pandas as pd
 
 ELEMENT_DICT = {}
 
@@ -41,9 +42,17 @@ def create_property(name, values, description, target="atom"):
     return {f"{name}": {"target": target, "values": values, "description": description}}
 
 
+def write_id_match_csv(train_atoms, test_atoms, system_name):
+    mp_ids = [atoms.info["mp_id"] for atoms in train_atoms]
+    mp_ids += [None for atoms in test_atoms]
+    train_test_label = ["training"] * len(train_atoms) + ["test"] * len(test_atoms)
+    df = pd.DataFrame({"mp_id": mp_ids, "train_test": train_test_label})
+    df.to_csv(f"{system_name}_chemiscope_id_match.csv", index=False)
+
+
 def write_chemiscope_input(train_atoms, test_atoms, reducers, system_name):
     all_atoms = train_atoms + test_atoms
-
+    write_id_match_csv(train_atoms, test_atoms, system_name)
     (descriptors, symbols, groups, periods, neighbours) = get_atomic_properties(
         all_atoms
     )
