@@ -32,27 +32,28 @@ def find_closest_training_points(training_df, test_df):
         structure_descriptors = np.vstack(
             structure_df["descriptor"]
         )  # num_atoms x num_features
-        structure_distances = np.dot(
+        structure_similarities = np.dot(
             structure_descriptors, training_descriptors.T
         )  # num_atoms x num_training_atoms
-        structure_distances /= np.linalg.norm(structure_descriptors, axis=1)[:, None]
-        structure_distances /= training_norms[None, :]
+        structure_similarities /= np.linalg.norm(structure_descriptors, axis=1)[:, None]
+        structure_similarities /= training_norms[None, :]
         elements = np.unique(structure_df["element"].values)
         for mp_id in unique_mp_ids:
             mp_id_mask = mp_ids == mp_id
-            mp_id_distances = structure_distances[:, mp_id_mask]
-            mp_id_distances = np.max(mp_id_distances, axis=1)
-            per_element_average_distances = [
-                np.mean(mp_id_distances[structure_df["element"] == x]) for x in elements
+            mp_id_similarities = structure_similarities[:, mp_id_mask]
+            mp_id_similarities = np.max(mp_id_similarities, axis=1)
+            per_element_average_similarities = [
+                np.mean(mp_id_similarities[structure_df["element"] == x])
+                for x in elements
             ]
-            per_element_results = dict(zip(elements, per_element_average_distances))
+            per_element_results = dict(zip(elements, per_element_average_similarities))
             results.append(
                 {
                     "structure_index": structure_index,
                     "mp_id": mp_id,
-                    "average_distance": np.mean(mp_id_distances),
-                    "element_stratified_average_distance": np.mean(
-                        per_element_average_distances
+                    "average_similarity": np.mean(mp_id_similarities),
+                    "element_stratified_average_similarity": np.mean(
+                        per_element_average_similarities
                     ),
                 }
                 | per_element_results
