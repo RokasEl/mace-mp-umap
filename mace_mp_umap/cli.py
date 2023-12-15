@@ -28,6 +28,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 class FilterType(str, Enum):
     exclusive = "exclusive"
     inclusive = "inclusive"
+    combinations = "combinations"
     none = "none"
 
 
@@ -59,9 +60,10 @@ def produce_mace_chemiscope_input(
     if filtering == FilterType.none:
         raise ValueError(
             "You must specify filtering type (either `--filtering exclusive` or `--filtering inclusive`).\n"
-            "Exclusive mode means those and only those structures are kept that contail all elements supplied via `-e` flags.\n"
+            "Combinations mode means that structures are kept if they're composed only of elements supplied via `-e` flags but don't need to contail all of the supplied elements.\n"
+            "Exclusive mode means those and only those structures are kept that contail all elements supplied via `-e` flags. This is a subset of `combinations`\n"
             "Inclusive mode means that other elements are allowed in addition to those supplied via `-e` flags.\n"
-            "Most applications should use `--filtering inclusive`. However, for elemental compounds or molecular compounds like water `exclusive` mode is more appropriate."
+            "Most applications should use `--filtering inclusive`. However, for elemental compounds or molecular compounds like water `exclusive` or `combinations` modes are more appropriate."
         )
 
     # Load model
@@ -87,7 +89,10 @@ def produce_mace_chemiscope_input(
         raise ValueError(
             f"No structures found in {data_path} or {mp_data_path}. Check your filtering settings."
         )
-    system_name = pathlib.Path(data_path).stem
+
+    element_subset_str = "".join(element_subset)
+    system_name = f"{pathlib.Path(data_path).stem}_{filtering}_{element_subset_str}"
+
     print(f"Will use {system_name} for naming output files.")
     # Fit dimensionality reduction
     slices = get_layer_specific_feature_slices(calc)

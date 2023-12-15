@@ -77,6 +77,7 @@ def filter_atoms(
     element_subset (list): The list of elements to consider during filtering.
     filtering_type (str): The type of filtering to apply. Can be 'none', 'exclusive', or 'inclusive'.
         'none' - No filtering is applied.
+        'combinations' - Return true if `atoms` is composed of combinations of elements in the subset, false otherwise. I.e. does not require all of the specified elements to be present.
         'exclusive' - Return true if `atoms` contains *only* elements in the subset, false otherwise.
         'inclusive' - Return true if `atoms` contains all elements in the subset, false otherwise. I.e. allows additional elements.
 
@@ -85,11 +86,14 @@ def filter_atoms(
     """
     if filtering_type == "none":
         return True
-    elif filtering_type == "exclusive":
+    elif filtering_type == "combinations":
         atom_symbols = np.unique(atoms.symbols)
         return all(
             [x in element_subset for x in atom_symbols]
         )  # atoms must *only* contain elements in the subset
+    elif filtering_type == "exclusive":
+        atom_symbols = set([x for x in atoms.symbols])
+        return atom_symbols == set(element_subset)
     elif filtering_type == "inclusive":
         atom_symbols = np.unique(atoms.symbols)
         return all(
