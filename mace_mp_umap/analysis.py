@@ -59,6 +59,6 @@ def find_closest_training_points(training_df, test_df):
                 | per_element_results
             )  # type: ignore
     return pd.DataFrame(results).sort_values(
-        by=["structure_index", "element_stratified_average_distance"],
+        by=["structure_index", "element_stratified_average_similarity"],
         ascending=[True, False],
     )
